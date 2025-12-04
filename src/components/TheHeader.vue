@@ -6,7 +6,4 @@
   </header>
 </template>
 
-<style>
-.header-container {
-}
-</style>
+<style></style>
