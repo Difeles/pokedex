@@ -1,16 +1,16 @@
+<script setup>
+const props = defineProps(['name', 'sprite'])
+</script>
+
 <template>
   <div class="card rounded-xl">
     <div class="card-inner">
-      <h2 class="text-xl">Charmander</h2>
+      <h2 class="text-xl">{{ props.name }}</h2>
       <div class="badge">
         <p>Fire</p>
       </div>
       <div class="image-container">
-        <img
-          class="image"
-          src="//https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/4.svg"
-          alt=""
-        />
+        <img class="image" :src="props.sprite" alt="" />
       </div>
     </div>
   </div>
