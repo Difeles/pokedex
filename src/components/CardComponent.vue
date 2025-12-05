@@ -8,7 +8,7 @@
       <div class="image-container">
         <img
           class="image"
-          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/4.svg"
+          src="//https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/4.svg"
           alt=""
         />
       </div>
