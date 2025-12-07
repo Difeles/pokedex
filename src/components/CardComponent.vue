@@ -1,16 +1,16 @@
 <script setup>
 import IconPokeball from './icons/IconPokeball.vue'
-const props = defineProps(['name', 'sprite'])
+const props = defineProps(['name', 'sprite', 'color', 'typeList'])
 </script>
 
 <template>
-  <div class="card rounded-xl">
+  <div class="card rounded-2xl" :style="{ backgroundColor: props.color }">
     <IconPokeball class="background-image" />
     <div class="card-inner">
       <div class="info-container">
-        <h2 class="text-xl">{{ props.name }}</h2>
-        <div class="badge">
-          <p>Fire</p>
+        <h2 class="name text-xl">{{ props.name }}</h2>
+        <div class="badge" :key="type" v-for="type in props.typeList">
+          <p>{{ type }}</p>
         </div>
       </div>
       <div class="image-container">
@@ -24,7 +24,6 @@ const props = defineProps(['name', 'sprite'])
 .card {
   position: relative;
   color: #fff;
-  background-color: #fd6565;
   overflow: hidden;
   height: 200px;
 }
@@ -37,12 +36,20 @@ const props = defineProps(['name', 'sprite'])
 }
 .info-container {
   width: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.name {
+  margin-bottom: 5px;
 }
 .badge {
   border-radius: 25px;
-  background-color: #ff8383;
+  background-color: #ffffff35;
   width: fit-content;
   padding: 2px 20px;
+}
+.badge-background {
 }
 .image-container {
   display: flex;
