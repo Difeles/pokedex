@@ -14,7 +14,7 @@ const props = defineProps(['name', 'sprite', 'color', 'typeList'])
         </div>
       </div>
       <div class="image-container">
-        <img class="image" :src="props.sprite" alt="" />
+        <img class="image" :src="props.sprite" loading="lazy" :alt="props.name" />
       </div>
     </div>
   </div>
@@ -48,8 +48,6 @@ const props = defineProps(['name', 'sprite', 'color', 'typeList'])
   background-color: #ffffff35;
   width: fit-content;
   padding: 2px 20px;
-}
-.badge-background {
 }
 .image-container {
   display: flex;

@@ -1,14 +1,22 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import CardComponent from './CardComponent.vue'
 import { usePokemonStore } from '@/stores/pokemon'
 import { storeToRefs } from 'pinia'
+import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 
 const store = usePokemonStore()
-const { error, loading, pokemonList } = storeToRefs(store)
+const { loading, pokemonList } = storeToRefs(store)
+
+const triggerRef = ref(null)
+const { observer } = useInfiniteScroll(store.loadPokemonList, loading)
 
 onMounted(async () => {
-  store.loadPokemonList()
+  observer.observe(triggerRef.value)
+})
+
+onUnmounted(() => {
+  observer.disconnect()
 })
 </script>
 
@@ -23,4 +31,5 @@ onMounted(async () => {
       :type-list="pokemon.types"
     ></CardComponent>
   </div>
+  <div ref="triggerRef"></div>
 </template>

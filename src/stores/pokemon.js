@@ -8,30 +8,38 @@ export const usePokemonStore = defineStore('pokemon', () => {
   const error = ref(null)
   const loading = ref(false)
   const pokemonList = ref([])
+  const limit = ref(20)
+  const offset = ref(0)
 
-  const loadPokemonList = async (limit = 20, offset = 0) => {
+  const loadPokemonList = async () => {
+    if (offset.value >= 151) return
     loading.value = true
     error.value = null
 
     try {
-      const data = await fetchPokemonList(limit, offset)
-      pokemonList.value = await Promise.all(
-        data.map(async (pokemon) => {
-          const id = pokemon.url.split('/').slice(-2, -1)[0]
-          const pokemonData = await fetchPokemonDetails(id)
+      if (offset.value > 131) {
+        limit.value = 151 - offset.value
+      }
+      const data = await fetchPokemonList(limit.value, offset.value)
+      console.log(pokemonList.value.length)
+      pokemonList.value = pokemonList.value.concat(
+        await Promise.all(
+          data.map(async (pokemon) => {
+            const id = pokemon.url.split('/').slice(-2, -1)[0]
+            const pokemonData = await fetchPokemonDetails(id)
 
-          return {
-            id: Number(id),
-            ...pokemon,
-            sprite: getSpriteUrl(id),
-            pokemonData,
-            color: getColor(pokemonData.types[0]?.type.name),
-            types: getTypesList(pokemonData.types),
-          }
-        }))
-      console.log(pokemonList.value);
-
-
+            return {
+              id: Number(id),
+              ...pokemon,
+              sprite: getSpriteUrl(id),
+              pokemonData,
+              color: getColor(pokemonData.types[0]?.type.name),
+              types: getTypesList(pokemonData.types),
+            }
+          }),
+        ),
+      )
+      offset.value = offset.value + 20
     } catch (err) {
       error.value = err.response?.data?.message || err.message || 'Неизвестная ошибка'
       throw err
@@ -65,7 +73,7 @@ const pokemonTypeColors = {
   dragon: '#A68EFF',
   dark: '#A89A91',
   steel: '#E0E0E0',
-  fairy: '#ffaae3ff'
+  fairy: '#ffaae3ff',
 }
 
 const getColor = (type) => {
@@ -74,8 +82,8 @@ const getColor = (type) => {
 
 const getTypesList = (array) => {
   const typesList = []
-  array.forEach(element => {
+  array.forEach((element) => {
     typesList.push(element.type.name)
-  });
+  })
   return typesList
 }
