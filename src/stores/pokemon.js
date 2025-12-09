@@ -8,10 +8,18 @@ export const usePokemonStore = defineStore('pokemon', () => {
   const error = ref(null)
   const loading = ref(false)
   const pokemonList = ref([])
+  const allPokemonList = ref([])
   const limit = ref(20)
   const offset = ref(0)
+  const isSearch = ref(false)
+
+  const loadAllPokemonList = async () => {
+    const data = await fetchPokemonList(151, 0)
+    allPokemonList.value = data
+  }
 
   const loadPokemonList = async () => {
+    if (isSearch.value) return
     if (offset.value >= 151) return
     loading.value = true
     error.value = null
@@ -21,24 +29,7 @@ export const usePokemonStore = defineStore('pokemon', () => {
         limit.value = 151 - offset.value
       }
       const data = await fetchPokemonList(limit.value, offset.value)
-      console.log(pokemonList.value.length)
-      pokemonList.value = pokemonList.value.concat(
-        await Promise.all(
-          data.map(async (pokemon) => {
-            const id = pokemon.url.split('/').slice(-2, -1)[0]
-            const pokemonData = await fetchPokemonDetails(id)
-
-            return {
-              id: Number(id),
-              ...pokemon,
-              sprite: getSpriteUrl(id),
-              pokemonData,
-              color: getColor(pokemonData.types[0]?.type.name),
-              types: getTypesList(pokemonData.types),
-            }
-          }),
-        ),
-      )
+      pokemonList.value = pokemonList.value.concat(await getDetails(data))
       offset.value = offset.value + 20
     } catch (err) {
       error.value = err.response?.data?.message || err.message || 'Неизвестная ошибка'
@@ -48,7 +39,34 @@ export const usePokemonStore = defineStore('pokemon', () => {
     }
   }
 
-  return { error, loading, pokemonList, loadPokemonList }
+  const getDetails = async (pokemonArray) => {
+    return await Promise.all(
+      pokemonArray.map(async (pokemon) => {
+        const id = pokemon.url.split('/').slice(-2, -1)[0]
+        const pokemonData = await fetchPokemonDetails(id)
+
+        return {
+          id: Number(id),
+          ...pokemon,
+          sprite: getSpriteUrl(id),
+          pokemonData,
+          color: getColor(pokemonData.types[0]?.type.name),
+          types: getTypesList(pokemonData.types),
+        }
+      }),
+    )
+  }
+
+  return {
+    error,
+    loading,
+    pokemonList,
+    allPokemonList,
+    loadPokemonList,
+    loadAllPokemonList,
+    getDetails,
+    isSearch,
+  }
 })
 
 const getSpriteUrl = (id) => {
