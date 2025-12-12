@@ -39,6 +39,19 @@ export const usePokemonStore = defineStore('pokemon', () => {
     }
   }
 
+  const loadSearchList = (search) => {
+    pokemonList.value = getDetails(
+      allPokemonList.value.filter((pokemon) => {
+        return pokemon.name.startsWith(search)
+      }),
+    )
+  }
+
+  const clearSearch = () => {
+    pokemonList.value = []
+    offset.value = 0
+  }
+
   const getDetails = async (pokemonArray) => {
     return await Promise.all(
       pokemonArray.map(async (pokemon) => {
@@ -64,6 +77,8 @@ export const usePokemonStore = defineStore('pokemon', () => {
     allPokemonList,
     loadPokemonList,
     loadAllPokemonList,
+    loadSearchList,
+    clearSearch,
     getDetails,
     isSearch,
   }

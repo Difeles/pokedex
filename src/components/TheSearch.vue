@@ -4,20 +4,22 @@ import { usePokemonStore } from '@/stores/pokemon'
 import { storeToRefs } from 'pinia'
 
 const store = usePokemonStore()
-const { allPokemonList, pokemonList, isSearch } = storeToRefs(store)
+const { isSearch } = storeToRefs(store)
 
 onMounted(() => {
   store.loadAllPokemonList()
 })
 
-const search = ref(null)
+const search = ref('')
 const find = async () => {
-  isSearch.value = true
-  pokemonList.value = await store.getDetails(
-    allPokemonList.value.filter((pokemon) => {
-      return pokemon.name.startsWith(search.value.value)
-    }),
-  )
+  if (search.value === '') {
+    isSearch.value = false
+    store.clearSearch()
+    store.loadPokemonList()
+  } else {
+    isSearch.value = true
+    store.loadSearchList(search.value)
+  }
 }
 </script>
 
@@ -39,7 +41,13 @@ const find = async () => {
         d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
       />
     </svg>
-    <input ref="search" class="search-input" type="text" placeholder="Поиск" />
+    <input
+      v-model="search"
+      class="search-input"
+      type="text"
+      placeholder="Поиск"
+      @keyup.enter="find"
+    />
     <button class="search-button" @click="find">Найти</button>
   </div>
 </template>
